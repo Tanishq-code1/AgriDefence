@@ -3,7 +3,7 @@ import { HeroSection } from '../components/home/HeroSection';
 import { FeatureSection } from '../components/home/FeatureSection';
 import { DemoSection } from '../components/home/DemoSection';
 import { MapSection } from '../components/home/MapSection';
-import { TestimonialSection } from '../components/home/TestimonialSection';
+// import { TestimonialSection } from '../components/home/TestimonialSection';
 import { CtaSection } from '../components/home/CtaSection';
 
 const HomePage: React.FC = () => {
@@ -13,7 +13,7 @@ const HomePage: React.FC = () => {
       <FeatureSection />
       <DemoSection />
       <MapSection />
-      <TestimonialSection />
+      {/* <TestimonialSection /> */}
       <CtaSection />
     </div>
   );
