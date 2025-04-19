@@ -11,7 +11,7 @@ const RoadmapPage: React.FC = () => {
               Future Aspect
             </h1>
             <p className="text-lg text-gray-600">
-              Discover our vision for the future of AgriGuard AI and how we're expanding our capabilities to revolutionize sustainable agriculture.
+              Discover our vision for the future of AgriGuard  and how we're expanding our capabilities to revolutionize sustainable agriculture.
             </p>
           </div>
 
@@ -20,7 +20,7 @@ const RoadmapPage: React.FC = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Our Vision</h2>
             <div className="prose max-w-none text-gray-700">
               <p>
-                At AgriGuard AI, we're on a mission to create a more sustainable future for agriculture. Our roadmap is guided by three core principles:
+                At AgriGuard , we're on a mission to create a more sustainable future for agriculture. Our roadmap is guided by three core principles:
               </p>
               <ol className="space-y-4 mt-4">
                 <li className="flex items-start">

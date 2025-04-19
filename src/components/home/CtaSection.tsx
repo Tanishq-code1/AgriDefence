@@ -44,7 +44,7 @@ export const CtaSection: React.FC = () => {
           <p className="text-xl text-white/80 mb-8">
             Join thousands of farmers worldwide who are reducing pesticide use,
             increasing yields, and practicing sustainable agriculture with
-            AgriGuard AI.
+            AgriGuard .
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-lg mx-auto mb-10">

@@ -4,7 +4,7 @@ import { Star, Quote } from 'lucide-react';
 const testimonials = [
   {
     id: 1,
-    quote: "AgriGuard AI has revolutionized how we manage pests on our 500-acre corn farm. We've reduced pesticide use by 60% while maintaining yields.",
+    quote: "AgriGuard  has revolutionized how we manage pests on our 500-acre corn farm. We've reduced pesticide use by 60% while maintaining yields.",
     author: "Sarah Johnson",
     role: "Corn Farmer, Iowa",
     image: "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=1600",
@@ -20,7 +20,7 @@ const testimonials = [
   },
   {
     id: 3,
-    quote: "As an agronomist working with multiple farms, AgriGuard AI has become an essential tool. The pest library and AI detection have saved countless crops.",
+    quote: "As an agronomist working with multiple farms, AgriGuard  has become an essential tool. The pest library and AI detection have saved countless crops.",
     author: "Emily Chen",
     role: "Agricultural Consultant",
     image: "https://images.pexels.com/photos/773371/pexels-photo-773371.jpeg?auto=compress&cs=tinysrgb&w=1600",
@@ -37,7 +37,7 @@ export const TestimonialSection: React.FC = () => {
             Success Stories from Real Farmers
           </h2>
           <p className="text-lg text-gray-600">
-            See how farmers around the world are transforming their pest management practices with AgriGuard AI.
+            See how farmers around the world are transforming their pest management practices with AgriGuard .
           </p>
         </div>
 

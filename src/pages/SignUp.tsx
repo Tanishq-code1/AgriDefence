@@ -58,7 +58,7 @@ const SignUp: React.FC = () => {
           <Leaf className="text-primary-600 h-12 w-12" />
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Create your AgriGuard AI account
+          Create your AgriGuard  account
         </h2>
       </div>
 

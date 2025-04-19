@@ -53,7 +53,7 @@ const SignIn: React.FC = () => {
           <Leaf className="text-primary-600 h-12 w-12" />
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Sign in to AgriGuard AI
+          Sign in to AgriGuard 
         </h2>
       </div>
 
