@@ -12,7 +12,7 @@ import PrecisionAgPage from "./pages/PrecisionAgPage";
 import CommunityPage from "./pages/CommunityPage";
 import RoadmapPage from "./pages/RoadmapPage";
 import SignUp from "./pages/SignUp";
-import SignIn from "./pages/SignIn"; // Now this import will work
+import SignIn from "./pages/SignIn"; 
 
 const queryClient = new QueryClient();
 
