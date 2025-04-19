@@ -8,7 +8,7 @@ const RoadmapPage: React.FC = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Future Roadmap
+              Future Aspect
             </h1>
             <p className="text-lg text-gray-600">
               Discover our vision for the future of AgriGuard AI and how we're expanding our capabilities to revolutionize sustainable agriculture.
@@ -84,8 +84,8 @@ const RoadmapPage: React.FC = () => {
                           <Check size={16} />
                         </div>
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-1">Basic Drone Integration</h4>
-                          <p className="text-sm text-gray-600">Aerial imagery analysis for field monitoring</p>
+                          <h4 className="font-medium text-gray-900 mb-1">Connect with Experts</h4>
+                          <p className="text-sm text-gray-600">Get personalized advice and insights from professionals</p>
                         </div>
                       </div>
                       <div className="flex items-start">
@@ -268,7 +268,7 @@ const RoadmapPage: React.FC = () => {
           </div>
 
           {/* CTA Section */}
-          <div className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl shadow-md overflow-hidden">
+          {/* <div className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl shadow-md overflow-hidden">
             <div className="px-8 py-10 md:px-10 md:py-12 text-center">
               <h2 className="text-2xl font-bold text-white mb-4">Join the Revolution in Sustainable Farming</h2>
               <p className="text-white/80 mb-8 max-w-2xl mx-auto">
@@ -283,7 +283,7 @@ const RoadmapPage: React.FC = () => {
                 </button>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

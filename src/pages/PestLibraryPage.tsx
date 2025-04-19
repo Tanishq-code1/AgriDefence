@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, Filter, SlidersHorizontal } from 'lucide-react';
+import React, { useState } from "react";
+import { Search, Filter, SlidersHorizontal } from "lucide-react";
 
 interface Pest {
   id: string;
@@ -8,81 +8,294 @@ interface Pest {
   crops: string[];
   regions: string[];
   image: string;
-  severity: 'Low' | 'Medium' | 'High';
-  category: 'Insect' | 'Disease' | 'Weed';
+  severity: "Low" | "Medium" | "High";
+  category: "Insect" | "Disease" | "Weed";
 }
 
 const pestData: Pest[] = [
   {
-    id: '1',
-    name: 'Fall Armyworm',
-    scientificName: 'Spodoptera frugiperda',
-    crops: ['Corn', 'Sorghum', 'Rice'],
-    regions: ['North America', 'South America', 'Africa'],
-    image: 'https://images.pexels.com/photos/7692897/pexels-photo-7692897.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    severity: 'High',
-    category: 'Insect',
+    id: "1",
+    name: "Fall Armyworm",
+    scientificName: "Spodoptera frugiperda",
+    crops: ["Corn", "Sorghum", "Rice"],
+    regions: ["North America", "South America", "Africa"],
+    image:
+      "data:image/jpeg;base64,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",
+    severity: "High",
+    category: "Insect",
   },
   {
-    id: '2',
-    name: 'Corn Rootworm',
-    scientificName: 'Diabrotica spp.',
-    crops: ['Corn', 'Soybeans'],
-    regions: ['North America', 'Europe'],
-    image: 'https://images.pexels.com/photos/5501096/pexels-photo-5501096.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    severity: 'High',
-    category: 'Insect',
+    id: "2",
+    name: "Corn Rootworm",
+    scientificName: "Diabrotica spp.",
+    crops: ["Corn", "Soybeans"],
+    regions: ["North America", "Europe"],
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1_amQPKpgMrEq-sM8UYKLsznf0IBkGq4VRA&s",
+    severity: "High",
+    category: "Insect",
   },
   {
-    id: '3',
-    name: 'Powdery Mildew',
-    scientificName: 'Erysiphe graminis',
-    crops: ['Wheat', 'Barley', 'Grapes'],
-    regions: ['Europe', 'Asia', 'North America'],
-    image: 'https://images.pexels.com/photos/7728637/pexels-photo-7728637.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    severity: 'Medium',
-    category: 'Disease',
+    id: "3",
+    name: "Powdery Mildew",
+    scientificName: "Erysiphe graminis",
+    crops: ["Wheat", "Barley", "Grapes"],
+    regions: ["Europe", "Asia", "North America"],
+    image:
+      "data:image/jpeg;base64,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",
+    severity: "Medium",
+    category: "Disease",
+  },
+  // {
+  //   id: "4",
+  //   name: "Coffee Leaf Rust",
+  //   scientificName: "Hemileia vastatrix",
+  //   crops: ["Coffee"],
+  //   regions: ["South America", "Central America", "Africa"],
+  //   image:
+  //     "https://www.researchgate.net/publication/322211181/figure/fig4/AS:668661715046404@1536432784227/Coffee-tree-leaf-infected-with-an-advanced-stage-of-coffee-rust-3-This-advanced-stage.ppm",
+  //   severity: "High",
+  //   category: "Disease",
+  // },
+  {
+    id: "5",
+    name: "Palmer Amaranth",
+    scientificName: "Amaranthus palmeri",
+    crops: ["Soybeans", "Cotton", "Corn"],
+    regions: ["North America"],
+    image:
+      "https://cals.cornell.edu/sites/default/files/styles/image_callout_standard/public/2022-06/palmer-amaranth-a_edit_small.jpg?h=1be07390&itok=boYcy_Ww",
+    severity: "Medium",
+    category: "Weed",
   },
   {
-    id: '4',
-    name: 'Coffee Leaf Rust',
-    scientificName: 'Hemileia vastatrix',
-    crops: ['Coffee'],
-    regions: ['South America', 'Central America', 'Africa'],
-    image: 'https://images.pexels.com/photos/37540/cucumber-salad-food-healthy-37540.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    severity: 'High',
-    category: 'Disease',
+    id: "6",
+    name: "Citrus Greening",
+    scientificName: "Candidatus Liberibacter asiaticus",
+    crops: ["Citrus"],
+    regions: ["North America", "Asia", "Africa"],
+    image:
+      "https://media.gettyimages.com/id/2156569194/video/piedade-dos-gerais-brazil-a-fly-rests-on-an-orange-hanging-from-a-tree-with-diseases-at-the.jpg?s=640x640&k=20&c=bGYhPQxkg93nBYzRkVRcWY_q7uX1Th3XulyUG8mQwF4=",
+    severity: "High",
+    category: "Disease",
   },
   {
-    id: '5',
-    name: 'Palmer Amaranth',
-    scientificName: 'Amaranthus palmeri',
-    crops: ['Soybeans', 'Cotton', 'Corn'],
-    regions: ['North America'],
-    image: 'https://images.pexels.com/photos/5472527/pexels-photo-5472527.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    severity: 'Medium',
-    category: 'Weed',
+    id: "7",
+    name: "Aphids",
+    scientificName: "Aphidoidea",
+    crops: ["Wheat", "Soybeans", "Citrus", "Cotton"],
+    regions: ["North America", "Europe", "Asia", "Africa"],
+    image:
+      "https://media.istockphoto.com/id/1365844874/photo/aphids-black-fly-on-broad-bean-plant-uk.jpg?s=612x612&w=0&k=20&c=ktdhmTrF4YFgn-QKzQ8xsIB0_Ph_5jPBT-cpI6_e59E=",
+    severity: "Medium",
+    category: "Insect",
   },
   {
-    id: '6',
-    name: 'Citrus Greening',
-    scientificName: 'Candidatus Liberibacter asiaticus',
-    crops: ['Citrus'],
-    regions: ['North America', 'Asia', 'Africa'],
-    image: 'https://images.pexels.com/photos/2294477/pexels-photo-2294477.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    severity: 'High',
-    category: 'Disease',
+    id: "8",
+    name: "Late Blight",
+    scientificName: "Phytophthora infestans",
+    crops: ["Potatoes", "Tomatoes"],
+    regions: ["North America", "Europe", "Asia"],
+    image:
+      "https://media.istockphoto.com/id/923234756/photo/potato.jpg?s=612x612&w=0&k=20&c=DNO9NKD5umSy9Qh47GliIehydeF0mcax6VNDhZsGURE=",
+    severity: "High",
+    category: "Disease",
+  },
+  {
+    id: "9",
+    name: "Japanese Beetle",
+    scientificName: "Popillia japonica",
+    crops: ["Corn", "Soybeans", "Grapes", "Raspberries"],
+    regions: ["North America", "Asia"],
+    image:
+      "https://www.shutterstock.com/shutterstock/videos/3545988645/thumb/1.jpg?ip=x480",
+    severity: "Medium",
+    category: "Insect",
+  },
+  {
+    id: "10",
+    name: "Boll Weevil",
+    scientificName: "Anthonomus grandis",
+    crops: ["Cotton"],
+    regions: ["North America", "South America"],
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBI8p9RjWtTZ0RRqDiP5q0vO3RjzfGBqiPpw&s",
+    severity: "High",
+    category: "Insect",
+  },
+  {
+    id: "11",
+    name: "Wheat Rust",
+    scientificName: "Puccinia graminis",
+    crops: ["Wheat", "Barley"],
+    regions: ["North America", "Europe", "Asia", "Africa"],
+    image:
+      "https://media.istockphoto.com/id/1358387551/photo/stem-rust-also-known-as-cereal-rust-black-rust-red-rust-or-red-dust-is-caused-by-the-fungus.jpg?s=612x612&w=0&k=20&c=5wytF3l50CxAzytAfWXZRmWMSJE0xa-NPyeOQj6DfRE=",
+    severity: "High",
+    category: "Disease",
+  },
+  {
+    id: "12",
+    name: "Barnyard Grass",
+    scientificName: "Echinochloa crus-galli",
+    crops: ["Rice", "Corn", "Soybeans"],
+    regions: ["North America", "Asia", "Europe"],
+    image: "https://cdn.britannica.com/91/6291-050-EA01D141/Barnyard-grass.jpg",
+    severity: "Medium",
+    category: "Weed",
+  },
+  {
+    id: "13",
+    name: "Colorado Potato Beetle",
+    scientificName: "Leptinotarsa decemlineata",
+    crops: ["Potatoes", "Tomatoes", "Eggplants"],
+    regions: ["North America", "Europe", "Asia"],
+    image:
+      "https://media.istockphoto.com/id/157615712/photo/a-colorado-beetle-eating-potato-leaves.jpg?s=612x612&w=0&k=20&c=xh4Kh56K4sJZBebMUoMCC27dBCJ7SKxEBNIafOtVaMY=",
+    severity: "High",
+    category: "Insect",
+  },
+  {
+    id: "14",
+    name: "Fusarium Wilt",
+    scientificName: "Fusarium oxysporum",
+    crops: ["Tomatoes", "Bananas", "Cotton"],
+    regions: ["North America", "South America", "Africa", "Asia"],
+    image:
+      "https://www.shutterstock.com/shutterstock/videos/3537134597/thumb/1.jpg?ip=x480",
+    severity: "High",
+    category: "Disease",
+  },
+  {
+    id: "15",
+    name: "Pigweed",
+    scientificName: "Amaranthus spp.",
+    crops: ["Corn", "Soybeans", "Cotton"],
+    regions: ["North America", "South America", "Africa"],
+    image:
+      "https://www.shutterstock.com/shutterstock/videos/1099103431/thumb/1.jpg?ip=x480",
+    severity: "Medium",
+    category: "Weed",
+  },
+  {
+    id: "16",
+    name: "Bacterial Blight of Rice",
+    scientificName: "Xanthomonas oryzae",
+    crops: ["Rice"],
+    regions: ["India", "Asia", "Africa"],
+    image: "https://media.sciencephoto.com/c0/23/71/28/c0237128-800px-wm.jpg", // Replace with actual rice blight image
+    severity: "High",
+    category: "Disease",
+  },
+  {
+    id: "17",
+    name: "Tikka Disease of Groundnut",
+    scientificName: "Cercospora arachidicola",
+    crops: ["Groundnut"],
+    regions: ["India", "Africa", "South America"],
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRswrQ72gmYN56OUQzv-g2bMY-cbP0hnnbkwA&s", // Replace with actual groundnut disease image
+    severity: "Medium",
+    category: "Disease",
+  },
+  {
+    id: "18",
+    name: "Red Rot of Sugarcane",
+    scientificName: "Colletotrichum falcatum",
+    crops: ["Sugarcane"],
+    regions: ["India", "Pakistan", "Bangladesh"],
+    image:
+      "https://apps.lucidcentral.org/pppw_v10/images/entities/sugarcane_red_rot_221/glomtucstems.jpg", // Replace with actual sugarcane disease image
+    severity: "High",
+    category: "Disease",
+  },
+  {
+    id: "19",
+    name: "Downy Mildew of Grapes",
+    scientificName: "Plasmopara viticola",
+    crops: ["Grapes"],
+    regions: ["India", "Europe", "North America"],
+    image:
+      "https://www.shutterstock.com/shutterstock/videos/1074162908/thumb/1.jpg?ip=x480", // Replace with actual grape mildew image
+    severity: "Medium",
+    category: "Disease",
+  },
+  {
+    id: "20",
+    name: "Early Blight of Potato",
+    scientificName: "Alternaria solani",
+    crops: ["Potato"],
+    regions: ["India", "Worldwide"],
+    image:
+      "https://vegpath.plantpath.wisc.edu/wp-content/uploads/sites/210/2023/11/potato-early-blight-leaves.jpg",
+    severity: "Medium",
+    category: "Disease",
+  },
+  {
+    id: "21",
+    name: "Sheath Blight of Rice",
+    scientificName: "Rhizoctonia solani",
+    crops: ["Rice"],
+    regions: ["India", "Asia"],
+    image:
+      "https://www.apsnet.org/edcenter/pdlessons/Article%20Images/RiceSheathFig1.jpg", // Replace with actual sheath blight image
+    severity: "High",
+    category: "Disease",
+  },
+  {
+    id: "22",
+    name: "Powdery Mildew of Mango",
+    scientificName: "Oidium mangiferae",
+    crops: ["Mango"],
+    regions: ["India", "Southeast Asia"],
+    image:
+      "https://www.greenlife.co.ke/wp-content/uploads/2022/04/mango_powdery_mildew.jpg", // Replace with actual mango mildew image
+    severity: "Medium",
+    category: "Disease",
+  },
+  {
+    id: "23",
+    name: "Citrus Canker",
+    scientificName: "Xanthomonas axonopodis",
+    crops: ["Citrus"],
+    regions: ["India", "Brazil", "USA"],
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFh7kc6FZLTu6_fPnxSxd4ZwixmWk_DGjZMw&s",
+    severity: "High",
+    category: "Disease",
+  },
+  {
+    id: "24",
+    name: "Leaf Curl of Chilli",
+    scientificName: "Begomovirus",
+    crops: ["Chilli"],
+    regions: ["India", "Pakistan"],
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzgk6xc4n_EiXJtgL3JE3Lo0NblxuNeIAJ3w&s", // Replace with actual chilli leaf curl image
+    severity: "High",
+    category: "Disease",
+  },
+  {
+    id: "25",
+    name: "Wilt of Chickpea",
+    scientificName: "Fusarium oxysporum f.sp. ciceri",
+    crops: ["Chickpea"],
+    regions: ["India", "Middle East"],
+    image:
+      "https://krishimala.com/sites/default/files/styles/catalogu/public/2018-07/wilt%20chickpea.jpg?itok=-Vj8oVrU",
+    severity: "High",
+    category: "Disease",
   },
 ];
 
 const PestLibraryPage: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedPest, setSelectedPest] = useState<Pest | null>(null);
   const [filters, setFilters] = useState({
-    category: 'All',
-    severity: 'All',
-    region: 'All',
-    crop: 'All',
+    category: "All",
+    severity: "All",
+    region: "All",
+    crop: "All",
   });
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,42 +303,41 @@ const PestLibraryPage: React.FC = () => {
   };
 
   const filteredPests = pestData.filter((pest) => {
-    // Search filter
-    const matchesSearch = pest.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          pest.scientificName.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    // Category filter
-    const matchesCategory = filters.category === 'All' || pest.category === filters.category;
-    
-    // Severity filter
-    const matchesSeverity = filters.severity === 'All' || pest.severity === filters.severity;
-    
-    // Region filter
-    const matchesRegion = filters.region === 'All' || pest.regions.includes(filters.region);
-    
-    // Crop filter
-    const matchesCrop = filters.crop === 'All' || pest.crops.includes(filters.crop);
-    
-    return matchesSearch && matchesCategory && matchesSeverity && matchesRegion && matchesCrop;
+    const matchesSearch =
+      pest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      pest.scientificName.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      filters.category === "All" || pest.category === filters.category;
+    const matchesSeverity =
+      filters.severity === "All" || pest.severity === filters.severity;
+    const matchesRegion =
+      filters.region === "All" || pest.regions.includes(filters.region);
+    const matchesCrop =
+      filters.crop === "All" || pest.crops.includes(filters.crop);
+
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesSeverity &&
+      matchesRegion &&
+      matchesCrop
+    );
   });
 
   const handleFilterChange = (filterType: string, value: string) => {
-    setFilters({
-      ...filters,
-      [filterType]: value,
-    });
+    setFilters({ ...filters, [filterType]: value });
   };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'Low':
-        return 'bg-success-100 text-success-700';
-      case 'Medium':
-        return 'bg-warning-100 text-warning-700';
-      case 'High':
-        return 'bg-error-100 text-error-700';
+      case "Low":
+        return "bg-green-100 text-green-800";
+      case "Medium":
+        return "bg-yellow-100 text-yellow-800";
+      case "High":
+        return "bg-red-100 text-red-800";
       default:
-        return 'bg-gray-100 text-gray-700';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -135,28 +347,30 @@ const PestLibraryPage: React.FC = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Comprehensive Pest Library
+              Comprehensive Pest & Disease Library
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Explore our extensive database of agricultural pests with detailed information on lifecycle, treatment options, and prevention strategies.
+              Agricultural knowledge hub with 25+ pests and diseases, including
+              detailed management strategies.
             </p>
           </div>
 
           <div className="flex flex-col lg:flex-row gap-8">
-            {/* Sidebar Filters */}
+            {/* Filters Sidebar */}
             <div className="lg:w-64 flex-shrink-0">
               <div className="bg-white rounded-xl shadow-sm p-6">
-                <div className="mb-6">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Search pests..."
-                      value={searchTerm}
-                      onChange={handleSearch}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md pl-10 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    />
-                    <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  </div>
+                <div className="mb-6 relative">
+                  <input
+                    type="text"
+                    placeholder="Search pests..."
+                    value={searchTerm}
+                    onChange={handleSearch}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md pl-10 focus:ring-2 focus:ring-blue-500"
+                  />
+                  <Search
+                    size={18}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  />
                 </div>
 
                 <div className="space-y-6">
@@ -166,77 +380,118 @@ const PestLibraryPage: React.FC = () => {
                     </h3>
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Category
+                        </label>
                         <select
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-500"
+                          className="w-full px-3 py-2 border rounded-md focus:ring-1 focus:ring-blue-500"
                           value={filters.category}
-                          onChange={(e) => handleFilterChange('category', e.target.value)}
+                          onChange={(e) =>
+                            handleFilterChange("category", e.target.value)
+                          }
                         >
-                          <option value="All">All Categories</option>
-                          <option value="Insect">Insect</option>
-                          <option value="Disease">Disease</option>
-                          <option value="Weed">Weed</option>
+                          {["All", "Insect", "Disease", "Weed"].map((opt) => (
+                            <option key={opt} value={opt}>
+                              {opt}
+                            </option>
+                          ))}
                         </select>
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Severity</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Severity
+                        </label>
                         <select
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-500"
+                          className="w-full px-3 py-2 border rounded-md focus:ring-1 focus:ring-blue-500"
                           value={filters.severity}
-                          onChange={(e) => handleFilterChange('severity', e.target.value)}
+                          onChange={(e) =>
+                            handleFilterChange("severity", e.target.value)
+                          }
                         >
-                          <option value="All">All Levels</option>
-                          <option value="Low">Low</option>
-                          <option value="Medium">Medium</option>
-                          <option value="High">High</option>
+                          {["All", "Low", "Medium", "High"].map((opt) => (
+                            <option key={opt} value={opt}>
+                              {opt}
+                            </option>
+                          ))}
                         </select>
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Region</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Region
+                        </label>
                         <select
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-500"
+                          className="w-full px-3 py-2 border rounded-md focus:ring-1 focus:ring-blue-500"
                           value={filters.region}
-                          onChange={(e) => handleFilterChange('region', e.target.value)}
+                          onChange={(e) =>
+                            handleFilterChange("region", e.target.value)
+                          }
                         >
-                          <option value="All">All Regions</option>
-                          <option value="North America">North America</option>
-                          <option value="South America">South America</option>
-                          <option value="Europe">Europe</option>
-                          <option value="Asia">Asia</option>
-                          <option value="Africa">Africa</option>
+                          {[
+                            "All",
+                            "North America",
+                            "South America",
+                            "Europe",
+                            "Asia",
+                            "Africa",
+                            "India",
+                          ].map((opt) => (
+                            <option key={opt} value={opt}>
+                              {opt}
+                            </option>
+                          ))}
                         </select>
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Crop</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Crop
+                        </label>
                         <select
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-500"
+                          className="w-full px-3 py-2 border rounded-md focus:ring-1 focus:ring-blue-500"
                           value={filters.crop}
-                          onChange={(e) => handleFilterChange('crop', e.target.value)}
+                          onChange={(e) =>
+                            handleFilterChange("crop", e.target.value)
+                          }
                         >
-                          <option value="All">All Crops</option>
-                          <option value="Corn">Corn</option>
-                          <option value="Soybeans">Soybeans</option>
-                          <option value="Wheat">Wheat</option>
-                          <option value="Rice">Rice</option>
-                          <option value="Cotton">Cotton</option>
-                          <option value="Coffee">Coffee</option>
-                          <option value="Citrus">Citrus</option>
+                          {[
+                            "All",
+                            "Corn",
+                            "Soybeans",
+                            "Wheat",
+                            "Rice",
+                            "Cotton",
+                            "Coffee",
+                            "Citrus",
+                            "Potatoes",
+                            "Tomatoes",
+                            "Grapes",
+                            "Groundnut",
+                            "Sugarcane",
+                            "Mango",
+                            "Chilli",
+                            "Chickpea",
+                          ].map((opt) => (
+                            <option key={opt} value={opt}>
+                              {opt}
+                            </option>
+                          ))}
                         </select>
                       </div>
                     </div>
                   </div>
 
-                  <button 
-                    className="w-full px-4 py-2 text-sm font-medium text-primary-600 bg-primary-50 rounded-md hover:bg-primary-100 transition-colors flex items-center justify-center"
-                    onClick={() => setFilters({
-                      category: 'All',
-                      severity: 'All',
-                      region: 'All',
-                      crop: 'All',
-                    })}
+                  <button
+                    className="w-full px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 flex items-center justify-center"
+                    onClick={() =>
+                      setFilters({
+                        category: "All",
+                        severity: "All",
+                        region: "All",
+                        crop: "All",
+                      })
+                    }
                   >
                     <SlidersHorizontal size={14} className="mr-2" />
                     Reset Filters
@@ -251,28 +506,36 @@ const PestLibraryPage: React.FC = () => {
                 <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                   <div className="md:flex">
                     <div className="md:w-1/3">
-                      <img 
-                        src={selectedPest.image} 
-                        alt={selectedPest.name} 
+                      <img
+                        src={selectedPest.image}
+                        alt={selectedPest.name}
                         className="w-full h-64 md:h-full object-cover"
                       />
                     </div>
                     <div className="md:w-2/3 p-6">
                       <div className="flex justify-between items-start">
                         <div>
-                          <h2 className="text-2xl font-bold text-gray-900 mb-1">{selectedPest.name}</h2>
-                          <p className="text-gray-500 italic mb-3">{selectedPest.scientificName}</p>
+                          <h2 className="text-2xl font-bold text-gray-900 mb-1">
+                            {selectedPest.name}
+                          </h2>
+                          <p className="text-gray-500 italic mb-3">
+                            {selectedPest.scientificName}
+                          </p>
                         </div>
                         <button
                           onClick={() => setSelectedPest(null)}
-                          className="text-sm text-primary-600 hover:text-primary-700"
+                          className="text-sm text-blue-600 hover:text-blue-700"
                         >
                           Back to list
                         </button>
                       </div>
 
                       <div className="flex flex-wrap gap-2 mb-6">
-                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${getSeverityColor(selectedPest.severity)}`}>
+                        <span
+                          className={`text-xs font-medium px-2.5 py-1 rounded-full ${getSeverityColor(
+                            selectedPest.severity
+                          )}`}
+                        >
                           {selectedPest.severity} Severity
                         </span>
                         <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-700">
@@ -282,10 +545,15 @@ const PestLibraryPage: React.FC = () => {
 
                       <div className="space-y-6">
                         <div>
-                          <h3 className="text-lg font-medium text-gray-900 mb-2">Affected Crops</h3>
+                          <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            Affected Crops
+                          </h3>
                           <div className="flex flex-wrap gap-2">
                             {selectedPest.crops.map((crop) => (
-                              <span key={crop} className="text-sm px-3 py-1 rounded-full bg-primary-50 text-primary-700">
+                              <span
+                                key={crop}
+                                className="text-sm px-3 py-1 rounded-full bg-blue-50 text-blue-700"
+                              >
                                 {crop}
                               </span>
                             ))}
@@ -293,10 +561,15 @@ const PestLibraryPage: React.FC = () => {
                         </div>
 
                         <div>
-                          <h3 className="text-lg font-medium text-gray-900 mb-2">Geographic Distribution</h3>
+                          <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            Geographic Distribution
+                          </h3>
                           <div className="flex flex-wrap gap-2">
                             {selectedPest.regions.map((region) => (
-                              <span key={region} className="text-sm px-3 py-1 rounded-full bg-secondary-50 text-secondary-700">
+                              <span
+                                key={region}
+                                className="text-sm px-3 py-1 rounded-full bg-green-50 text-green-700"
+                              >
                                 {region}
                               </span>
                             ))}
@@ -304,44 +577,52 @@ const PestLibraryPage: React.FC = () => {
                         </div>
 
                         <div>
-                          <h3 className="text-lg font-medium text-gray-900 mb-2">Description</h3>
+                          <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            Description
+                          </h3>
                           <p className="text-gray-700">
-                            {selectedPest.name} ({selectedPest.scientificName}) is a {selectedPest.severity.toLowerCase()} severity {selectedPest.category.toLowerCase()} pest that affects {selectedPest.crops.join(', ')} in {selectedPest.regions.join(', ')}. 
-                            This pest is known for causing significant damage to crops if left untreated.
+                            {selectedPest.name} ({selectedPest.scientificName})
+                            is a {selectedPest.severity.toLowerCase()}-severity
+                            {selectedPest.category.toLowerCase()} affecting{" "}
+                            {selectedPest.crops.join(", ")} crops. Found in{" "}
+                            {selectedPest.regions.join(", ")}, it can cause
+                            significant yield losses if not managed properly.
                           </p>
                         </div>
 
                         <div>
-                          <h3 className="text-lg font-medium text-gray-900 mb-2">Management Strategies</h3>
+                          <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            Management Strategies
+                          </h3>
                           <ul className="space-y-2">
                             <li className="flex items-start">
-                              <span className="text-primary-500 mr-2">•</span>
-                              <span>Implement crop rotation with non-host plants</span>
+                              <span className="text-blue-500 mr-2">•</span>
+                              <span>Crop rotation with non-host plants</span>
                             </li>
                             <li className="flex items-start">
-                              <span className="text-primary-500 mr-2">•</span>
-                              <span>Use resistant or tolerant crop varieties when available</span>
+                              <span className="text-blue-500 mr-2">•</span>
+                              <span>Use of resistant varieties</span>
                             </li>
                             <li className="flex items-start">
-                              <span className="text-primary-500 mr-2">•</span>
-                              <span>Apply biological controls such as natural predators</span>
+                              <span className="text-blue-500 mr-2">•</span>
+                              <span>Biological control methods</span>
                             </li>
                             <li className="flex items-start">
-                              <span className="text-primary-500 mr-2">•</span>
-                              <span>Targeted application of approved pesticides when necessary</span>
+                              <span className="text-blue-500 mr-2">•</span>
+                              <span>Judicious use of approved pesticides</span>
                             </li>
                           </ul>
                         </div>
                       </div>
 
-                      <div className="mt-8 flex space-x-4">
-                        <button className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md font-medium transition-colors">
+                      {/* <div className="mt-8 flex space-x-4">
+                        <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium">
                           Download Fact Sheet
                         </button>
-                        <button className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 transition-colors">
+                        <button className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
                           Report Sighting
                         </button>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
@@ -349,7 +630,8 @@ const PestLibraryPage: React.FC = () => {
                 <div className="space-y-4">
                   <div className="bg-white p-4 rounded-xl shadow-sm">
                     <p className="text-gray-500">
-                      Showing {filteredPests.length} of {pestData.length} pests
+                      Showing {filteredPests.length} of {pestData.length}{" "}
+                      entries
                     </p>
                   </div>
 
@@ -358,28 +640,39 @@ const PestLibraryPage: React.FC = () => {
                       {filteredPests.map((pest) => (
                         <div
                           key={pest.id}
-                          className="bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow duration-200"
+                          className="bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer hover:shadow-md"
                           onClick={() => setSelectedPest(pest)}
                         >
                           <div className="relative h-48">
-                            <img 
-                              src={pest.image} 
-                              alt={pest.name} 
+                            <img
+                              src={pest.image}
+                              alt={pest.name}
                               className="w-full h-full object-cover"
                             />
                             <div className="absolute top-0 right-0 m-3">
-                              <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${getSeverityColor(pest.severity)}`}>
+                              <span
+                                className={`text-xs font-medium px-2.5 py-1 rounded-full ${getSeverityColor(
+                                  pest.severity
+                                )}`}
+                              >
                                 {pest.severity}
                               </span>
                             </div>
                           </div>
                           <div className="p-4">
-                            <h3 className="font-semibold text-gray-900 mb-1">{pest.name}</h3>
-                            <p className="text-sm text-gray-500 italic mb-3">{pest.scientificName}</p>
-                            
+                            <h3 className="font-semibold text-gray-900 mb-1">
+                              {pest.name}
+                            </h3>
+                            <p className="text-sm text-gray-500 italic mb-3">
+                              {pest.scientificName}
+                            </p>
+
                             <div className="flex flex-wrap gap-1 mb-3">
                               {pest.crops.slice(0, 3).map((crop) => (
-                                <span key={crop} className="text-xs px-2 py-1 rounded-full bg-primary-50 text-primary-700">
+                                <span
+                                  key={crop}
+                                  className="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700"
+                                >
                                   {crop}
                                 </span>
                               ))}
@@ -389,8 +682,8 @@ const PestLibraryPage: React.FC = () => {
                                 </span>
                               )}
                             </div>
-                            
-                            <button className="text-sm text-primary-600 hover:text-primary-700 font-medium">
+
+                            <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
                               View Details
                             </button>
                           </div>
@@ -399,7 +692,9 @@ const PestLibraryPage: React.FC = () => {
                     </div>
                   ) : (
                     <div className="bg-white p-6 rounded-xl shadow-sm text-center">
-                      <p className="text-gray-500">No pests match your search criteria. Try adjusting your filters.</p>
+                      <p className="text-gray-500">
+                        No matching pests found. Adjust your search or filters.
+                      </p>
                     </div>
                   )}
                 </div>

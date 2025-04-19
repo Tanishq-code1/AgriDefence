@@ -1,302 +1,522 @@
-import React, { useState } from 'react';
-import { 
-  LayoutDashboard, 
-  BarChart2, 
-  Map, 
-  Settings, 
-  Bell, 
-  Calendar, 
-  Droplets, 
-  Wind, 
-  ThermometerSun, 
+import React, { useState } from "react";
+import {
+  LayoutDashboard,
+  BarChart2,
+  Map,
+  Settings,
+  Bell,
+  Calendar as CalendarIcon, // Renamed import
   AlertTriangle,
-  TrendingUp,
-  TrendingDown,
-  Bug,
   RefreshCcw,
   Download,
   CheckCircle,
   XCircle,
-} from 'lucide-react';
+  Plus,
+  Filter,
+  Search,
+} from "lucide-react";
+import {
+  BarChart,
+  LineChart,
+  PieChart,
+  Line,
+  Bar,
+  Pie,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
+import Calendar from "react-calendar"; // Separate calendar component
+import "react-calendar/dist/Calendar.css";
 
-const mockFieldData = [
-  { id: 1, name: 'North Field', crop: 'Corn', size: '120 acres', status: 'Healthy', risk: 'Low' },
-  { id: 2, name: 'South Field', crop: 'Soybeans', size: '85 acres', status: 'Warning', risk: 'Medium' },
-  { id: 3, name: 'East Field', crop: 'Wheat', size: '95 acres', status: 'Healthy', risk: 'Low' },
-  { id: 4, name: 'West Field', crop: 'Cotton', size: '110 acres', status: 'Alert', risk: 'High' },
+type Field = {
+  id: number;
+  name: string;
+  crop: string;
+  size: string;
+  status: "Healthy" | "Warning" | "Alert";
+  risk: "Low" | "Medium" | "High";
+  lastInspection: string;
+};
+
+type Alert = {
+  id: number;
+  type: "warning" | "info" | "success" | "error";
+  message: string;
+  time: string;
+  resolved: boolean;
+};
+
+const mockFieldData: Field[] = [
+  {
+    id: 1,
+    name: "North Field",
+    crop: "Corn",
+    size: "120 acres",
+    status: "Healthy",
+    risk: "Low",
+    lastInspection: "2024-03-15",
+  },
+  {
+    id: 2,
+    name: "South Field",
+    crop: "Soybeans",
+    size: "85 acres",
+    status: "Warning",
+    risk: "Medium",
+    lastInspection: "2024-03-14",
+  },
+  {
+    id: 3,
+    name: "East Field",
+    crop: "Wheat",
+    size: "95 acres",
+    status: "Healthy",
+    risk: "Low",
+    lastInspection: "2024-03-13",
+  },
+  {
+    id: 4,
+    name: "West Field",
+    crop: "Cotton",
+    size: "110 acres",
+    status: "Alert",
+    risk: "High",
+    lastInspection: "2024-03-12",
+  },
+  {
+    id: 5,
+    name: "Central Field",
+    crop: "Rice",
+    size: "75 acres",
+    status: "Healthy",
+    risk: "Low",
+    lastInspection: "2024-03-11",
+  },
+  {
+    id: 6,
+    name: "Hilltop Field",
+    crop: "Barley",
+    size: "65 acres",
+    status: "Warning",
+    risk: "Medium",
+    lastInspection: "2024-03-10",
+  },
 ];
 
-const mockAlerts = [
-  { id: 1, type: 'warning', message: 'Possible Fall Armyworm infestation in West Field', time: '2 hours ago' },
-  { id: 2, type: 'info', message: 'Weather forecast: Rain expected in 3 days', time: '5 hours ago' },
-  { id: 3, type: 'success', message: 'South Field treatment completed successfully', time: '1 day ago' },
-  { id: 4, type: 'error', message: 'High risk of aphid outbreak in South Field', time: '1 day ago' },
+const mockAlerts: Alert[] = [
+  {
+    id: 1,
+    type: "warning",
+    message: "Possible Fall Armyworm infestation in West Field",
+    time: "2 hours ago",
+    resolved: false,
+  },
+  {
+    id: 2,
+    type: "info",
+    message: "Weather forecast: Rain expected in 3 days",
+    time: "5 hours ago",
+    resolved: false,
+  },
+  {
+    id: 3,
+    type: "success",
+    message: "South Field treatment completed successfully",
+    time: "1 day ago",
+    resolved: true,
+  },
+  {
+    id: 4,
+    type: "error",
+    message: "High risk of aphid outbreak in South Field",
+    time: "1 day ago",
+    resolved: false,
+  },
 ];
+
+// Chart Data
+const pesticideData = [
+  { month: "Jan", usage: 45 },
+  { month: "Feb", usage: 38 },
+  { month: "Mar", usage: 29 },
+  { month: "Apr", usage: 22 },
+  { month: "May", usage: 18 },
+  { month: "Jun", usage: 12 },
+];
+
+const yieldData = [
+  { week: "W1", forecast: 80, actual: 78 },
+  { week: "W2", forecast: 82, actual: 85 },
+  { week: "W3", forecast: 85, actual: 82 },
+  { week: "W4", forecast: 88, actual: 90 },
+];
+
+const pestData = [
+  { region: "North", alerts: 2 },
+  { region: "South", alerts: 5 },
+  { region: "East", alerts: 1 },
+  { region: "West", alerts: 4 },
+];
+
+const fieldStatusData = [
+  { name: "Healthy", value: 65, color: "#10b981" },
+  { name: "At Risk", value: 20, color: "#f59e0b" },
+  { name: "Infected", value: 15, color: "#ef4444" },
+];
+
+const CalendarView = () => {
+  const [value, onChange] = useState(new Date());
+
+  return (
+    <div className="p-4 bg-white rounded-xl shadow-sm">
+      <h3 className="font-medium text-gray-900 mb-4">Farming Calendar</h3>
+      <Calendar
+        onChange={onChange}
+        value={value}
+        className="react-calendar border-0 rounded-lg"
+      />
+    </div>
+  );
+};
 
 const DashboardPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedField, setSelectedField] = useState<Field | null>(null);
+  const [showNewFieldForm, setShowNewFieldForm] = useState(false);
+  const [newField, setNewField] = useState<Partial<Field>>({
+    name: "",
+    crop: "",
+    size: "",
+    status: "Healthy",
+    risk: "Low",
+  });
 
-  const renderWeatherWidget = () => (
-    <div className="bg-white rounded-xl shadow-sm p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="font-medium text-gray-900">Weather Forecast</h3>
-        <span className="text-sm text-gray-500">Farmington, CA</span>
-      </div>
-      <div className="flex items-center justify-around">
-        <div className="text-center">
-          <p className="text-sm text-gray-500">Today</p>
-          <ThermometerSun size={28} className="mx-auto my-2 text-warning-500" />
-          <p className="font-medium">78°F</p>
-          <p className="text-xs text-success-600">Sunny</p>
-        </div>
-        <div className="text-center">
-          <p className="text-sm text-gray-500">Tomorrow</p>
-          <Cloud size={28} className="mx-auto my-2 text-secondary-500" />
-          <p className="font-medium">72°F</p>
-          <p className="text-xs text-gray-600">Cloudy</p>
-        </div>
-        <div className="text-center">
-          <p className="text-sm text-gray-500">Wed</p>
-          <Droplets size={28} className="mx-auto my-2 text-accent-500" />
-          <p className="font-medium">68°F</p>
-          <p className="text-xs text-accent-600">Rain</p>
-        </div>
-        <div className="text-center">
-          <p className="text-sm text-gray-500">Thu</p>
-          <Wind size={28} className="mx-auto my-2 text-gray-500" />
-          <p className="font-medium">70°F</p>
-          <p className="text-xs text-gray-600">Windy</p>
-        </div>
-      </div>
-    </div>
+  const handleViewDetails = (field: Field) => {
+    setSelectedField(field);
+  };
+
+  const handleResolveAlert = (alertId: number) => {
+    console.log("Resolved alert:", alertId);
+  };
+
+  const handleAddField = () => {
+    console.log("Adding new field:", newField);
+    setShowNewFieldForm(false);
+    setNewField({
+      name: "",
+      crop: "",
+      size: "",
+      status: "Healthy",
+      risk: "Low",
+    });
+  };
+
+  const filteredFields = mockFieldData.filter(
+    (field) =>
+      field.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      field.crop.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const renderSustainabilityScore = () => (
-    <div className="bg-white rounded-xl shadow-sm p-4">
-      <h3 className="font-medium text-gray-900 mb-2">Sustainability Score</h3>
-      <div className="flex items-center">
-        <div className="w-3/4 mr-4">
-          <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-success-500 to-primary-500 rounded-full" style={{width: '72%'}}></div>
-          </div>
-          <div className="flex justify-between mt-1">
-            <span className="text-xs text-gray-500">0</span>
-            <span className="text-xs text-gray-500">50</span>
-            <span className="text-xs text-gray-500">100</span>
-          </div>
-        </div>
-        <div className="w-1/4 text-center">
-          <p className="text-2xl font-bold text-primary-600">72</p>
-          <p className="text-xs text-gray-500">Good</p>
-        </div>
-      </div>
-      <div className="mt-3 flex justify-between text-xs">
-        <div className="flex items-center">
-          <TrendingUp size={14} className="text-success-500 mr-1" />
-          <span className="text-success-600">+5 from last month</span>
-        </div>
-        <button className="text-primary-600 hover:underline">View Details</button>
-      </div>
-    </div>
-  );
-
-  const renderPestAlert = () => (
-    <div className="bg-error-50 rounded-xl shadow-sm p-4">
-      <div className="flex items-start">
-        <AlertTriangle size={24} className="text-error-500 mr-3 flex-shrink-0 mt-1" />
-        <div>
-          <h3 className="font-semibold text-error-700 mb-1">High Alert: Pest Detected</h3>
-          <p className="text-sm text-gray-700 mb-2">
-            Fall Armyworm infestation detected in West Field (Section 3). Immediate action recommended.
-          </p>
-          <div className="flex space-x-2">
-            <button className="px-3 py-1 bg-white text-sm font-medium text-error-700 rounded border border-error-200 hover:bg-error-50">
-              View Details
-            </button>
-            <button className="px-3 py-1 bg-error-600 text-sm font-medium text-white rounded hover:bg-error-700">
-              Take Action
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderStatCards = () => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-      <div className="bg-white rounded-xl shadow-sm p-4">
-        <div className="flex justify-between items-start">
-          <div>
-            <p className="text-sm text-gray-500 mb-1">Pesticide Reduction</p>
-            <p className="text-2xl font-bold text-gray-900">-68%</p>
-          </div>
-          <div className="p-2 bg-success-100 rounded-lg">
-            <TrendingDown size={20} className="text-success-500" />
-          </div>
-        </div>
-        <div className="mt-2 flex items-center">
-          <TrendingDown size={14} className="text-success-500 mr-1" />
-          <span className="text-xs text-success-600">12% more than last season</span>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-xl shadow-sm p-4">
-        <div className="flex justify-between items-start">
-          <div>
-            <p className="text-sm text-gray-500 mb-1">Yield Forecast</p>
-            <p className="text-2xl font-bold text-gray-900">+22%</p>
-          </div>
-          <div className="p-2 bg-primary-100 rounded-lg">
-            <TrendingUp size={20} className="text-primary-500" />
-          </div>
-        </div>
-        <div className="mt-2 flex items-center">
-          <TrendingUp size={14} className="text-primary-500 mr-1" />
-          <span className="text-xs text-primary-600">8% increase projected</span>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-xl shadow-sm p-4">
-        <div className="flex justify-between items-start">
-          <div>
-            <p className="text-sm text-gray-500 mb-1">Active Pest Alerts</p>
-            <p className="text-2xl font-bold text-gray-900">3</p>
-          </div>
-          <div className="p-2 bg-warning-100 rounded-lg">
-            <Bug size={20} className="text-warning-500" />
-          </div>
-        </div>
-        <div className="mt-2 flex items-center">
-          <TrendingDown size={14} className="text-success-500 mr-1" />
-          <span className="text-xs text-success-600">2 fewer than last week</span>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-xl shadow-sm p-4">
-        <div className="flex justify-between items-start">
-          <div>
-            <p className="text-sm text-gray-500 mb-1">Fields Monitored</p>
-            <p className="text-2xl font-bold text-gray-900">4/4</p>
-          </div>
-          <div className="p-2 bg-accent-100 rounded-lg">
-            <CheckCircle size={20} className="text-accent-500" />
-          </div>
-        </div>
-        <div className="mt-2 flex items-center">
-          <RefreshCcw size={14} className="text-accent-500 mr-1" />
-          <span className="text-xs text-accent-600">Last update: 2 hours ago</span>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderFieldTable = () => (
-    <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-      <div className="flex justify-between items-center px-6 py-4 border-b">
-        <h3 className="font-medium text-gray-900">Field Status</h3>
-        <div className="flex space-x-2">
-          <button className="p-1 text-gray-500 hover:text-primary-600">
-            <RefreshCcw size={16} />
-          </button>
-          <button className="p-1 text-gray-500 hover:text-primary-600">
-            <Download size={16} />
-          </button>
-        </div>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Field</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Crop</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk Level</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {mockFieldData.map((field) => (
-              <tr key={field.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="font-medium text-gray-900">{field.name}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {field.crop}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {field.size}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    field.status === 'Healthy' ? 'bg-success-100 text-success-800' :
-                    field.status === 'Warning' ? 'bg-warning-100 text-warning-800' :
-                    'bg-error-100 text-error-800'
-                  }`}>
-                    {field.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    field.risk === 'Low' ? 'bg-success-100 text-success-800' :
-                    field.risk === 'Medium' ? 'bg-warning-100 text-warning-800' :
-                    'bg-error-100 text-error-800'
-                  }`}>
-                    {field.risk}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <button className="text-primary-600 hover:text-primary-900">Details</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-
-  const renderAlerts = () => (
-    <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-      <div className="px-6 py-4 border-b">
-        <h3 className="font-medium text-gray-900">Recent Alerts</h3>
-      </div>
-      <div className="divide-y divide-gray-100">
-        {mockAlerts.map((alert) => (
-          <div key={alert.id} className="px-6 py-4 hover:bg-gray-50">
-            <div className="flex items-start">
-              <div className="flex-shrink-0 mr-3">
-                {alert.type === 'warning' && <AlertTriangle size={18} className="text-warning-500" />}
-                {alert.type === 'info' && <Bell size={18} className="text-accent-500" />}
-                {alert.type === 'success' && <CheckCircle size={18} className="text-success-500" />}
-                {alert.type === 'error' && <XCircle size={18} className="text-error-500" />}
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "overview":
+        return (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="p-4 bg-white rounded-xl shadow-sm">
+                <h3 className="text-sm text-gray-500 mb-2">Total Fields</h3>
+                <div className="text-2xl font-bold text-gray-900">6</div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 mb-1">{alert.message}</p>
-                <p className="text-xs text-gray-500">{alert.time}</p>
+              <div className="p-4 bg-white rounded-xl shadow-sm">
+                <h3 className="text-sm text-gray-500 mb-2">Active Alerts</h3>
+                <div className="text-2xl font-bold text-error-600">3</div>
               </div>
-              <div className="ml-3">
-                <button className="text-xs text-primary-600 hover:text-primary-800">View</button>
+              <div className="p-4 bg-white rounded-xl shadow-sm">
+                <h3 className="text-sm text-gray-500 mb-2">Crops Growing</h3>
+                <div className="text-2xl font-bold text-success-600">5</div>
+              </div>
+              <div className="p-4 bg-white rounded-xl shadow-sm">
+                <h3 className="text-sm text-gray-500 mb-2">Avg. Yield</h3>
+                <div className="text-2xl font-bold text-primary-600">82%</div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <PesticideReductionChart />
+              <YieldComparisonChart />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <FieldStatusChart />
+              <div className="bg-white rounded-xl shadow-sm p-4">
+                <h3 className="font-medium text-gray-900 mb-4">
+                  Recent Activities
+                </h3>
+                <div className="space-y-4">
+                  {mockAlerts.slice(0, 3).map((alert) => (
+                    <div
+                      key={alert.id}
+                      className="flex items-center p-3 bg-gray-50 rounded-lg"
+                    >
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-700">{alert.message}</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {alert.time}
+                        </p>
+                      </div>
+                      {!alert.resolved && (
+                        <button
+                          onClick={() => handleResolveAlert(alert.id)}
+                          className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm hover:bg-primary-200"
+                        >
+                          Mark Resolved
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </>
+        );
+
+      case "fields":
+        return (
+          <div className="space-y-6">
+            <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
+              <div className="relative w-full md:w-64">
+                <input
+                  type="text"
+                  placeholder="Search fields..."
+                  className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <Search
+                  className="absolute left-3 top-2.5 text-gray-400"
+                  size={18}
+                />
+              </div>
+              <div className="flex gap-2 w-full md:w-auto">
+                <button className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                  <Filter size={16} /> Filter
+                </button>
+                <button
+                  onClick={() => setShowNewFieldForm(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-success-600 text-white rounded-lg hover:bg-success-700"
+                >
+                  <Plus size={16} /> Add Field
+                </button>
+              </div>
+            </div>
+
+            {showNewFieldForm && (
+              <div className="bg-white p-6 rounded-xl shadow-sm">
+                <h3 className="text-lg font-medium mb-4">Add New Field</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    placeholder="Field Name"
+                    className="p-2 border rounded"
+                    value={newField.name}
+                    onChange={(e) =>
+                      setNewField({ ...newField, name: e.target.value })
+                    }
+                  />
+                  <input
+                    type="text"
+                    placeholder="Crop Type"
+                    className="p-2 border rounded"
+                    value={newField.crop}
+                    onChange={(e) =>
+                      setNewField({ ...newField, crop: e.target.value })
+                    }
+                  />
+                  <input
+                    type="text"
+                    placeholder="Size (acres)"
+                    className="p-2 border rounded"
+                    value={newField.size}
+                    onChange={(e) =>
+                      setNewField({ ...newField, size: e.target.value })
+                    }
+                  />
+                  <select
+                    className="p-2 border rounded"
+                    value={newField.status}
+                    onChange={(e) =>
+                      setNewField({
+                        ...newField,
+                        status: e.target.value as Field["status"],
+                      })
+                    }
+                  >
+                    <option value="Healthy">Healthy</option>
+                    <option value="Warning">Warning</option>
+                    <option value="Alert">Alert</option>
+                  </select>
+                </div>
+                <div className="mt-4 flex justify-end gap-2">
+                  <button
+                    onClick={() => setShowNewFieldForm(false)}
+                    className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleAddField}
+                    className="px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700"
+                  >
+                    Save Field
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Field
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Crop
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {filteredFields.map((field) => (
+                        <tr key={field.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                            {field.name}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                            {field.crop}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                field.status === "Healthy"
+                                  ? "bg-success-100 text-success-800"
+                                  : field.status === "Warning"
+                                  ? "bg-warning-100 text-warning-800"
+                                  : "bg-error-100 text-error-800"
+                              }`}
+                            >
+                              {field.status}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <button
+                              onClick={() => handleViewDetails(field)}
+                              className="text-primary-600 hover:text-primary-900 text-sm"
+                            >
+                              View Details
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              {selectedField && (
+                <div className="bg-white p-6 rounded-xl shadow-sm">
+                  <h3 className="text-xl font-semibold mb-4">
+                    {selectedField.name} Details
+                  </h3>
+                  <div className="space-y-3">
+                    <p>
+                      <span className="font-medium">Crop:</span>{" "}
+                      {selectedField.crop}
+                    </p>
+                    <p>
+                      <span className="font-medium">Size:</span>{" "}
+                      {selectedField.size}
+                    </p>
+                    <p>
+                      <span className="font-medium">Last Inspection:</span>{" "}
+                      {selectedField.lastInspection}
+                    </p>
+                    <p>
+                      <span className="font-medium">Risk Level:</span>
+                      <span
+                        className={`ml-2 px-2 py-1 text-xs font-semibold rounded-full ${
+                          selectedField.risk === "Low"
+                            ? "bg-success-100 text-success-800"
+                            : selectedField.risk === "Medium"
+                            ? "bg-warning-100 text-warning-800"
+                            : "bg-error-100 text-error-800"
+                        }`}
+                      >
+                        {selectedField.risk}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+
+      case "analytics":
+        return (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <YieldComparisonChart />
+            <PestAlertChart />
+            <FieldStatusChart />
+            <div className="bg-white rounded-xl shadow-sm p-4">
+              <h3 className="font-medium text-gray-900 mb-4">
+                Crop Distribution
+              </h3>
+              <div className="flex flex-wrap gap-4">
+                {Array.from(new Set(mockFieldData.map((f) => f.crop))).map(
+                  (crop) => (
+                    <div key={crop} className="flex items-center gap-2">
+                      <div className="w-4 h-4 rounded-full bg-primary-600"></div>
+                      <span className="text-sm text-gray-700">{crop}</span>
+                    </div>
+                  )
+                )}
               </div>
             </div>
           </div>
-        ))}
-      </div>
-      <div className="px-6 py-3 bg-gray-50 text-center">
-        <button className="text-sm text-primary-600 hover:text-primary-800 font-medium">
-          View All Alerts
-        </button>
-      </div>
-    </div>
-  );
+        );
+
+      case "calendar":
+        return <CalendarView />;
+
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="pt-20 min-h-screen bg-gray-100">
       <div className="container mx-auto px-4 md:px-6 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Farmer Dashboard</h1>
-            <p className="text-gray-600">Welcome back, John! Here's your farm overview.</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              Smart Farm Dashboard
+            </h1>
+            <p className="text-gray-600">
+              Welcome back, Farmer! Here's your farm overview.
+            </p>
           </div>
           <div className="flex space-x-3">
             <button className="p-2 bg-white rounded-full text-gray-600 hover:text-primary-600 hover:bg-gray-50">
@@ -309,92 +529,177 @@ const DashboardPage: React.FC = () => {
         </div>
 
         <div className="flex items-center space-x-1 bg-white rounded-lg shadow-sm mb-6 overflow-x-auto">
-          <button
-            className={`px-4 py-3 text-sm font-medium flex items-center whitespace-nowrap ${
-              activeTab === 'overview' ? 'text-primary-600 border-b-2 border-primary-600' : 'text-gray-600 hover:text-gray-900'
-            }`}
-            onClick={() => setActiveTab('overview')}
-          >
-            <LayoutDashboard size={16} className="mr-2" />
-            Overview
-          </button>
-          <button
-            className={`px-4 py-3 text-sm font-medium flex items-center whitespace-nowrap ${
-              activeTab === 'fields' ? 'text-primary-600 border-b-2 border-primary-600' : 'text-gray-600 hover:text-gray-900'
-            }`}
-            onClick={() => setActiveTab('fields')}
-          >
-            <Map size={16} className="mr-2" />
-            Fields
-          </button>
-          <button
-            className={`px-4 py-3 text-sm font-medium flex items-center whitespace-nowrap ${
-              activeTab === 'analytics' ? 'text-primary-600 border-b-2 border-primary-600' : 'text-gray-600 hover:text-gray-900'
-            }`}
-            onClick={() => setActiveTab('analytics')}
-          >
-            <BarChart2 size={16} className="mr-2" />
-            Analytics
-          </button>
-          <button
-            className={`px-4 py-3 text-sm font-medium flex items-center whitespace-nowrap ${
-              activeTab === 'calendar' ? 'text-primary-600 border-b-2 border-primary-600' : 'text-gray-600 hover:text-gray-900'
-            }`}
-            onClick={() => setActiveTab('calendar')}
-          >
-            <Calendar size={16} className="mr-2" />
-            Calendar
-          </button>
+          {["overview", "fields", "analytics", "calendar"].map((tab) => (
+            <button
+              key={tab}
+              className={`px-4 py-3 text-sm font-medium flex items-center whitespace-nowrap transition-colors ${
+                activeTab === tab
+                  ? "text-primary-600 border-b-2 border-primary-600 bg-primary-50"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+              }`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab === "overview" && (
+                <LayoutDashboard size={16} className="mr-2" />
+              )}
+              {tab === "fields" && <Map size={16} className="mr-2" />}
+              {tab === "analytics" && <BarChart2 size={16} className="mr-2" />}
+              {tab === "calendar" && (
+                <CalendarIcon size={16} className="mr-2" />
+              )}{" "}
+              {/* Updated icon name */}
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
         </div>
 
-        <div className="space-y-6">
-          {/* Stats Row */}
-          {renderStatCards()}
-
-          {/* Alert Row */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-2">
-              {renderPestAlert()}
-            </div>
-            <div>
-              {renderWeatherWidget()}
-            </div>
-          </div>
-
-          {/* Main Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              {renderFieldTable()}
-            </div>
-            <div>
-              <div className="space-y-6">
-                {renderSustainabilityScore()}
-                {renderAlerts()}
-              </div>
-            </div>
-          </div>
-        </div>
+        <div className="space-y-6">{renderTabContent()}</div>
       </div>
     </div>
   );
 };
 
-// This component is needed for the Weather widget
-const Cloud = (props: any) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={props.size || 24}
-    height={props.size || 24}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={props.className}
-  >
-    <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
-  </svg>
+// Reused chart components with fixed names
+const PesticideReductionChart = () => (
+  <div className="p-4 bg-white rounded-xl shadow-sm h-64">
+    <h3 className="font-medium text-gray-900 mb-2">
+      Pesticide Reduction Over Time
+    </h3>
+    <ResponsiveContainer width="100%" height="80%">
+      <LineChart data={pesticideData}>
+        <CartesianGrid strokeDasharray="3 3" className="text-gray-200" />
+        <XAxis dataKey="month" stroke="#6b7280" />
+        <YAxis stroke="#6b7280" />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          }}
+        />
+        <Line
+          type="monotone"
+          dataKey="usage"
+          stroke="#3b82f6"
+          strokeWidth={2}
+          dot={{ fill: "#3b82f6", strokeWidth: 2 }}
+        />
+      </LineChart>
+    </ResponsiveContainer>
+  </div>
+);
+
+const YieldComparisonChart = () => (
+  <div className="p-4 bg-white rounded-xl shadow-sm h-64">
+    <h3 className="font-medium text-gray-900 mb-2">Yield Forecast vs Actual</h3>
+    <ResponsiveContainer width="100%" height="80%">
+      <LineChart data={yieldData}>
+        <CartesianGrid strokeDasharray="3 3" className="text-gray-200" />
+        <XAxis dataKey="week" stroke="#6b7280" />
+        <YAxis stroke="#6b7280" />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          }}
+        />
+        <Line
+          type="monotone"
+          dataKey="forecast"
+          stroke="#8b5cf6"
+          strokeWidth={2}
+          strokeDasharray="5 5"
+        />
+        <Line
+          type="monotone"
+          dataKey="actual"
+          stroke="#10b981"
+          strokeWidth={2}
+          dot={{ fill: "#10b981", strokeWidth: 2 }}
+        />
+        <Legend
+          wrapperStyle={{ paddingTop: "10px" }}
+          formatter={(value) => (
+            <span className="text-gray-600 text-sm">{value}</span>
+          )}
+        />
+      </LineChart>
+    </ResponsiveContainer>
+  </div>
+);
+
+const PestAlertChart = () => (
+  <div className="p-4 bg-white rounded-xl shadow-sm h-64">
+    <h3 className="font-medium text-gray-900 mb-2">
+      Active Pest Alerts by Region
+    </h3>
+    <ResponsiveContainer width="100%" height="80%">
+      <BarChart data={pestData}>
+        <CartesianGrid strokeDasharray="3 3" className="text-gray-200" />
+        <XAxis dataKey="region" stroke="#6b7280" />
+        <YAxis stroke="#6b7280" />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          }}
+        />
+        <Bar dataKey="alerts" fill="#ef4444" radius={[4, 4, 0, 0]} />
+      </BarChart>
+    </ResponsiveContainer>
+  </div>
+);
+
+const FieldStatusChart = () => (
+  <div className="p-4 bg-white rounded-xl shadow-sm h-96">
+    <h3 className="font-medium text-gray-900 mb-2">Field Status Overview</h3>
+    <ResponsiveContainer width="100%" height="80%">
+      <PieChart>
+        <Pie
+          data={fieldStatusData}
+          cx="50%"
+          cy="50%"
+          innerRadius={60}
+          outerRadius={80}
+          paddingAngle={5}
+          dataKey="value"
+        >
+          {fieldStatusData.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={entry.color} />
+          ))}
+        </Pie>
+        <Legend
+          wrapperStyle={{ paddingTop: "20px" }}
+          formatter={(value) => {
+            const entry = fieldStatusData.find((d) => d.name === value);
+            return (
+              <span className="text-sm flex items-center">
+                <div
+                  className="w-3 h-3 rounded-full mr-2"
+                  style={{ backgroundColor: entry?.color }}
+                />
+                {value}
+              </span>
+            );
+          }}
+        />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          }}
+          formatter={(value) => `${value}%`}
+        />
+      </PieChart>
+    </ResponsiveContainer>
+  </div>
 );
 
 export default DashboardPage;
