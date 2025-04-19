@@ -33,7 +33,7 @@ function App() {
                   path="/precision-agriculture"
                   element={<PrecisionAgPage />}
                 />
-                {/* <Route path="/community" element={<CommunityPage />} /> */}
+                <Route path="/community" element={<CommunityPage />} />
                 <Route path="/roadmap" element={<RoadmapPage />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/signin" element={<SignIn />} />
