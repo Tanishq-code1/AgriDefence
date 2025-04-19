@@ -1,31 +1,53 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Leaf } from "lucide-react";
+import axios from "axios";
 
 const SignUp: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setIsSubmitting(true);
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
+      setIsSubmitting(false);
       return;
     }
 
     try {
-      // Simulated API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/signup",
+        {
+          name: email.split("@")[0], // Generate name from email
+          email,
+          password,
+        }
+      );
 
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("userEmail", email);
-      navigate("/dashboard");
+      if (response.data.success) {
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("userEmail", email);
+        navigate("/dashboard");
+      }
     } catch (err) {
-      setError("Registration failed. Please try again.");
+      if (axios.isAxiosError(err)) {
+        setError(
+          err.response?.data?.message ||
+            "Registration failed. Please try again."
+        );
+      } else {
+        setError("An unexpected error occurred");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -47,6 +69,7 @@ const SignUp: React.FC = () => {
               <div className="text-red-600 text-sm text-center">{error}</div>
             )}
 
+            {/* Email Input */}
             <div>
               <label
                 htmlFor="email"
@@ -66,6 +89,7 @@ const SignUp: React.FC = () => {
               </div>
             </div>
 
+            {/* Password Input */}
             <div>
               <label
                 htmlFor="password"
@@ -85,6 +109,7 @@ const SignUp: React.FC = () => {
               </div>
             </div>
 
+            {/* Confirm Password Input */}
             <div>
               <label
                 htmlFor="confirmPassword"
@@ -106,9 +131,10 @@ const SignUp: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              disabled={isSubmitting}
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
             >
-              Create Account
+              {isSubmitting ? "Creating Account..." : "Create Account"}
             </button>
 
             <div className="text-center text-sm text-gray-600">

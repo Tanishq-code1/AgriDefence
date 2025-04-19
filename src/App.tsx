@@ -8,7 +8,7 @@ import HomePage from "./pages/HomePage";
 import PestDetectionPage from "./pages/PestDetectionPage";
 import PestLibraryPage from "./pages/PestLibraryPage";
 import DashboardPage from "./pages/DashboardPage";
-import PrecisionAgPage from "./pages/PrecisionAgPage";
+// import PrecisionAgPage from "./pages/PrecisionAgPage";
 import CommunityPage from "./pages/CommunityPage";
 import RoadmapPage from "./pages/RoadmapPage";
 import SignUp from "./pages/SignUp";
@@ -29,10 +29,10 @@ function App() {
                 <Route path="/pest-detection" element={<PestDetectionPage />} />
                 <Route path="/pest-library" element={<PestLibraryPage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
-                <Route
+                {/* <Route
                   path="/precision-agriculture"
                   element={<PrecisionAgPage />}
-                />
+                /> */}
                 <Route path="/community" element={<CommunityPage />} />
                 <Route path="/roadmap" element={<RoadmapPage />} />
                 <Route path="/signup" element={<SignUp />} />

@@ -12,12 +12,21 @@ export const Header: React.FC = () => {
 
   // Auth initialization effect
   useEffect(() => {
-    const storedAuth = localStorage.getItem("isLoggedIn");
-    const storedEmail = localStorage.getItem("userEmail");
-    if (storedAuth && storedEmail) {
-      setIsLoggedIn(true);
-      setUserData({ email: storedEmail });
-    }
+    const checkAuth = () => {
+      const token = localStorage.getItem("token");
+      const user = localStorage.getItem("user");
+      if (token && user) {
+        setIsLoggedIn(true);
+        setUserData(JSON.parse(user));
+      } else {
+        setIsLoggedIn(false);
+        setUserData({ email: "" });
+      }
+    };
+
+    checkAuth();
+    window.addEventListener("storage", checkAuth);
+    return () => window.removeEventListener("storage", checkAuth);
   }, []);
 
   // Scroll effect
@@ -36,11 +45,11 @@ export const Header: React.FC = () => {
 
     switch (action) {
       case "signout":
-        localStorage.removeItem("isLoggedIn");
-        localStorage.removeItem("userEmail");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
         setIsLoggedIn(false);
         setUserData({ email: "" });
-        navigate("/");
+        navigate("/signin");
         break;
 
       case "signup":
@@ -58,7 +67,7 @@ export const Header: React.FC = () => {
     { name: "Pest Detection", path: "/pest-detection" },
     { name: "Pest Library", path: "/pest-library" },
     { name: "Dashboard", path: "/dashboard" },
-    { name: "Precision Ag", path: "/precision-agriculture" },
+    // { name: "Precision Ag", path: "/precision-agriculture" },
     { name: "Community", path: "/community" },
     { name: "Future Aspect", path: "/roadmap" },
   ];
@@ -83,7 +92,7 @@ export const Header: React.FC = () => {
                 isScrolled ? "text-primary-600" : "text-white"
               }`}
             >
-              AgriGuard 
+              AgriGuard
             </span>
           </Link>
 
